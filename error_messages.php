@@ -2,8 +2,15 @@
 	class ErrorMessages {
 		public static function getUnexpectedErrorMessage() {
 			return '<div class="alert alert-danger">
-						<strong>Ошибка!</strong> Возникла непредвиденная ошибка. Перейти на 
-							<a href = "admin.php">Админ</a> или <a href = "client.php">Клиент</a>.
+						<strong>Помилка!</strong> Виникла непередбачувана помилка. Перейти на 
+							<a href = "admin.php">Адмін</a> або <a href = "client.php">Клієнт</a>.
+					</div>';
+		}
+		
+		public static function getAuthErrorMessage() {
+			return '<div class="alert alert-danger">
+						<strong>Помилка!</strong> Виникла помилка при авторизації. Перейти на 
+							<a href = "admin.php">Адмін</a> або <a href = "client.php">Клієнт</a>.
 					</div>';
 		}
 		
@@ -11,12 +18,12 @@
 			$msg = "";
 			if(!DataFormatter::isInteger($price)) {
 				$msg .= '<div class="alert alert-danger">
-						<strong>Ошибка!</strong> Цена должна быть целым положительным числом.
+						<strong>Помилка!</strong> Ціна має бути цілим додатнім числом.
 					</div>';
 			}
 			if(!DataFormatter::isFloat($square)) {
 				$msg .= '<div class="alert alert-danger">
-						<strong>Ошибка!</strong> Площадь должна быть положительным числом.
+						<strong>Помилка!</strong> Площа має бути додатнім числом.
 					</div>';
 			}
 			return $msg;

@@ -1,5 +1,14 @@
+<?php
+	session_start();
+	// Check if the user is logged in, if not then redirect him to login page
+	if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
+		header("location: auth.php");
+		exit;
+	}
+?>
+
 <!DOCTYPE html>
-<html lang = 'ru'>
+<html lang = 'uk'>
 	<head>
 		<!-- Latest compiled and minified CSS -->
 		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
@@ -16,7 +25,7 @@
 		<meta charset = 'utf-8' />
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		
-		<title>Новостройки:Админ</title>
+		<title>Новобудови:Адмін</title>
 	</head>
 	<body>
 
@@ -31,20 +40,28 @@
 					$id = $_POST['complex_id'];
 					$complex = ComplexManage::find($id);
 					$name = $complex->getName();
-					$city = $complex->getCity();
+					$city_name = $complex->getCity()->getName();
 					
 					
 					echo"
-						<h2 class = 'display-4'>Изменить информацию про новостройку</h2>
+						<h2 class = 'display-4'>Змінити інформацію про новобудову</h2>
 						<p></p>
 
 						<form action = 'admin.php' method = 'POST'>
 						<input type = 'hidden' name = 'id' value = 'edit_complex' />
 						<input type = 'hidden' name = 'complex_id' value = '".$id."' />
-						<h5>Название:</h5>  <input type = 'text' class = 'form-control' name = 'name' value = '".$name."' />
-						<h5>Город:</h5>  <input type = 'text' class = 'form-control' name = 'city' value = '".$city."'/>
+						<h5>Назва:</h5>  <input type = 'text' class = 'form-control' name = 'name' value = '".$name."' />
+						<h5>Місто:</h5>  <select name = 'city_name' class = 'form-control'>";
+						
+						$city_names = QueryRunner::getAllCitiesAsArray();
+						foreach($city_names as $cur_city_name) {
+							echo "<option value = '".$cur_city_name."' ".($city_name == $cur_city_name  ? "selected = 'selected'" : "").
+							">".$cur_city_name."</option>\n";
+						}	
+						
+						echo"</select>
 						<p></p>
-						<input type = 'submit' value = 'Изменить' class = 'btn btn-warning' />";
+						<input type = 'submit' value = 'Змінити' class = 'btn btn-warning' />";
 				}
 				else {
 					echo ErrorMessages::getUnexpectedErrorMessage();

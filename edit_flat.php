@@ -1,5 +1,14 @@
+<?php
+	session_start();
+	// Check if the user is logged in, if not then redirect him to login page
+	if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
+		header("location: auth.php");
+		exit;
+	}
+?>
+
 <!DOCTYPE html>
-<html lang = 'ru'>
+<html lang = 'uk'>
 	<head>
 		<!-- Latest compiled and minified CSS -->
 		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
@@ -16,7 +25,7 @@
 		<meta charset = 'utf-8' />
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		
-		<title>Новостройки:Админ</title>
+		<title>Новобудови:Адмін</title>
 	</head>
 	<body>
 		<?php
@@ -65,7 +74,7 @@
 		?>
 
 		<div class = 'container'>
-			<h2 class = 'display-4'>Изменить информацию про квартиру</h2>
+			<h2 class = 'display-4'>Змінити інформацію про квартиру</h2>
 			<p></p>
 			<?php 
 			echo "
@@ -77,7 +86,7 @@
 				echo "
 				</select>
 				
-				<h5>Дом:</h5>  
+				<h5>Будинок:</h5>  
 				<select name = 'house_name' class = 'form-control'>
 					
 							<option value = '".$house_name."'>".$house_name."</option>\n;
@@ -86,7 +95,7 @@
 					
 				</select>
 				
-				<h5>Количество комнат:</h5>  
+				<h5>Кількість кімнат:</h5>  
 				<select name = 'flat_type' class = 'form-control'>";
 						$flat_types = QueryRunner::getAllFlatTypesAsArray();
 						foreach($flat_types as $cur_flat_type) {
@@ -96,11 +105,11 @@
 				echo "
 				</select>
 					
-				<h5>Площадь(кв. м):</h5>  <input type = 'text' class = 'form-control' name = 'square' value = '".$square."'/>
-				<h5>Цена(за всю квартиру, грн):</h5>  <input type = 'text' class = 'form-control' name = 'price' value = '".$price."'/>
+				<h5>Площа(кв. м):</h5>  <input type = 'text' class = 'form-control' name = 'square' value = '".$square."'/>
+				<h5>Ціна(за всю квартиру, грн):</h5>  <input type = 'text' class = 'form-control' name = 'price' value = '".$price."'/>
 				
 				<p></p>
-				<input type = 'submit' value = 'Изменить' class = 'btn btn-warning' />
+				<input type = 'submit' value = 'Змінити' class = 'btn btn-warning' />
 				
 			</form>";
 			?>

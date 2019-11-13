@@ -28,43 +28,40 @@
 		<title>Новобудови:Адмін</title>
 	</head>
 	<body>
+
 		<div class = 'container'>
-			<?php				
+			<?php
+					
 				include 'db_manager.php';
 				include 'error_messages.php';
 				
-				if(array_key_exists('house_id', $_POST)) {
-					$id =$_POST['house_id'];
-					$house = HouseManage::find($id);
-					$name = $house->getName();;
-					$complex_name = $house->getComplex()->getName();;
-						echo "
-					<h2 class = 'display-4'>Змінити інформацію про будинок</h2>
-					<p></p>
-					<form action = 'admin.php' method = 'POST'>
-					<input type = 'hidden' name = 'id' value = 'edit_house' /> 
-					<input type = 'hidden' name = 'house_id' value = '".$id."' /> 
-					<h5>Назва:</h5>  <input type = 'text' class = 'form-control' name = 'name' value = '".$name."' />
-					<h5>Комплекс:</h5>  
-					<select name = 'complex_name' class = 'form-control'>
-					"; 
-					$complex_names = QueryRunner::getAllComplexNamesAsArray();
-					foreach($complex_names as $cur_complex_name) {
-						echo "<option value = '".$cur_complex_name."' ".($complex_name == $cur_complex_name  ? "selected = 'selected'" : "").
-						">".$cur_complex_name."</option>\n";
-					}
-					echo"</select>
+				
+				if(array_key_exists('city_id', $_POST)) {
+					$id = $_POST['city_id'];
+					$city = cityManage::find($id);
+					$name = $city->getName();
+					
+					echo"
+						<h2 class = 'display-4'>Змінити інформацію про локацію</h2>
 						<p></p>
-						<input type = 'submit' value = 'Змінити' class = 'btn btn-warning' />
+
+						<form action = 'admin.php' method = 'POST'>
+						<input type = 'hidden' name = 'id' value = 'edit_city' />
+						<input type = 'hidden' name = 'city_id' value = '".$id."' />
+						<h5>Назва:</h5>  <input type = 'text' class = 'form-control' name = 'name' value = '".$name."' />";
 						
-					</form>";
+						echo"
+						<p></p>
+						<input type = 'submit' value = 'Змінити' class = 'btn btn-warning' />";
 				}
 				else {
 					echo ErrorMessages::getUnexpectedErrorMessage();
 				}
-				
-			
 			?>
+			
+		
+				
+			</form>
 		</div>
 	</body>
 </html>

@@ -1,5 +1,13 @@
+<?php
+	if(array_key_exists('id', $_POST) && $_POST['id'] == 'logout') {
+		session_start();
+		$_SESSION = array();
+		session_destroy();		
+	}
+?>
+
 <!DOCTYPE html>
-<html lang = 'ru'>
+<html lang = 'uk'>
 	<head>
 		<!-- Latest compiled and minified CSS -->
 		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
@@ -16,12 +24,15 @@
 		<meta charset = 'utf-8' />
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		
-		<title>Новостройки:Главная</title>
+		<title>Новобудови:Головна</title>
 	</head>
 	<body>
 		<div class = 'container'>
-			<h1 class = 'display-4'>Вы сейчас на главной странице, для начала работы нужно выбрать страничку 
-				<a href = 'client.php'>Клиент</a> или <a href = 'admin.php'>Админ</a>.</h1>
+			<h1 class = 'display-4'>
+			Ви зараз на головній сторінці, для початку роботи оберіть 
+				<a href = 'client.php'>Клієнт</a> або <a href = 'admin.php'>Адмін</a>.
+			Щоб запустити запити, перейдіть на 	<a href = 'queries_page.php'>Запити</a>.
+			</h1>
 			
 		</div>
 	</body>

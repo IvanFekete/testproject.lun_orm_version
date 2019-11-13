@@ -1,10 +1,121 @@
 <?php
-class ComplexManage {
-	public static function create($name, $city) {
+
+class CityManage {
+	public static function create($name) {
 		require "bootstrap.php";
 		
-		$complex = new Complex();
+		$city = new City();
 
+		$city->setName($name);
+				
+		$entityManager->persist($city);
+		$entityManager->flush();
+	}
+	
+	public static function edit($id, $name) {
+		require "bootstrap.php";
+		
+		$city = $entityManager->find('City', $id);
+		if(!$city) {
+			echo "There is no city with id $id";
+			return;
+		}
+
+		$city->setName($name);
+				
+		$entityManager->flush();
+	}	
+	
+	public static function del($id) {
+		require "bootstrap.php";
+		
+		$city = $entityManager->find('City', $id);
+		if(!$city) {
+			echo "There is no city with id $id";
+			return;
+		}
+		
+		$complexes = $city->getComplexes();
+		if($complexes) {
+			foreach($complexes as $complex) {
+				if($complex) {
+					ComplexManage::del($complex->getId());
+				}
+			}
+		}
+		
+		$entityManager->remove($city);
+		
+		$entityManager->flush();
+	}
+		
+	public static function find($id) {
+		require "bootstrap.php";
+		return $entityManager->find("City", $id);
+	}
+	
+
+}
+
+class LocalityManage {
+	public static function create($name) {
+		require "bootstrap.php";
+		$locality = new Locality();
+		
+		$locality->setName($name);
+				
+		$entityManager->persist($locality);
+		$entityManager->flush();
+	}
+	
+	public static function edit($id, $name) {
+		require "bootstrap.php";
+		
+		$locality = $entityManager->find('Locality', $id);
+		if(!$locality) {
+			echo "There is no locality with id $id";
+			return;
+		}
+
+		$locality->setName($name);
+				
+		$entityManager->flush();
+	}
+	
+	
+	public static function del($id) {
+		require "bootstrap.php";
+		
+		$locality = $entityManager->find('Locality', $id);
+		if(!$locality) {
+			echo "There is no locality with id $id";
+			return;
+		}
+		
+		$entityManager->remove($locality);
+		
+		$entityManager->flush();
+	}
+	
+	
+	public static function find($id) {
+		require "bootstrap.php";
+		return $entityManager->find("Locality", $id);
+	}
+	
+}
+
+class ComplexManage {
+	public static function create($name, $cityId) {
+		require "bootstrap.php";
+		$city = $entityManager->find('City', $cityId);
+		if(!$city) {
+			echo "There is no city with id $cityId";
+			return;
+		}
+		
+		$complex = new Complex();
+		
 		$complex->setName($name);
 		$complex->setCity($city);
 				
@@ -12,12 +123,17 @@ class ComplexManage {
 		$entityManager->flush();
 	}
 	
-	public static function edit($id, $name, $city) {
+	public static function edit($id, $name, $cityId) {
 		require "bootstrap.php";
 		
 		$complex = $entityManager->find('Complex', $id);
 		if(!$complex) {
 			echo "There is no complex with id $id";
+			return;
+		}
+		$city = $entityManager->find('City', $cityId);
+		if(!$city) {
+			echo "There is no city with id $cityId";
 			return;
 		}
 
@@ -212,6 +328,31 @@ class QueryRunner {
 		return $query->getArrayResult();
 	}
 	
+	public static function getAllComplexes() {		
+		$dql = "SELECT c, ct, l FROM Complex c JOIN c.city ct  JOIN c.localities l";
+		return QueryRunner::runDqlQuery($dql);
+	}
+	
+	public static function getAllHouses() {		
+		$dql = "SELECT h, c, ct, l FROM House h JOIN h.complex c JOIN c.city ct JOIN c.localities l ORDER BY c.id";
+		return QueryRunner::runDqlQuery($dql);
+	}
+	
+	public static function getAllFlats() {		
+		$dql = "SELECT f, ft, h, c, ct, l FROM Flat f JOIN f.flatType ft JOIN f.house h JOIN h.complex c JOIN c.city ct JOIN c.localities l";
+		return QueryRunner::runDqlQuery($dql);
+	}
+	
+	public static function getAllCities() {		
+		$dql = "SELECT l FROM City l";
+		return QueryRunner::runDqlQuery($dql);
+	}
+	
+	public static function getAllLocalities() {		
+		$dql = "SELECT l, c, ct FROM Locality l JOIN l.complexes c JOIN c.city ct";
+		return QueryRunner::runDqlQuery($dql);
+	}
+	
 	public static function getAllComplexNamesAsArray() {
 		$dql = "SELECT c FROM Complex c";
 		$res = QueryRunner::runDqlQuery($dql);
@@ -233,13 +374,26 @@ class QueryRunner {
 	}
 	
 	public static function getAllCitiesAsArray() {
-		$dql = "SELECT c FROM Complex c ";
+		$dql = "SELECT ct FROM City ct ";
 		$res = QueryRunner::runDqlQuery($dql);
 		$resultAsArr = [];
 		foreach($res as $row) {
-			$city = $row['city'];
+			$city = $row['name'];
 			if(!in_array($city, $resultAsArr)) {
 				array_push($resultAsArr, $city);
+			}
+		}
+		return $resultAsArr;
+	}
+	
+	public static function getAllLocalitiesAsArray() {
+		$dql = "SELECT lt FROM Locality lt";
+		$res = QueryRunner::runDqlQuery($dql);
+		$resultAsArr = [];
+		foreach($res as $row) {
+			$locality = $row['name'];
+			if(!in_array($locality, $resultAsArr)) {
+				array_push($resultAsArr, $locality);
 			}
 		}
 		return $resultAsArr;

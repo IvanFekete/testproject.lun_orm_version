@@ -1,5 +1,14 @@
+<?php
+	session_start();
+	// Check if the user is logged in, if not then redirect him to login page
+	if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
+		header("location: auth.php");
+		exit;
+	}
+?>
+
 <!DOCTYPE html>
-<html lang = 'ru'>
+<html lang = 'uk'>
 	<head>
 		<!-- Latest compiled and minified CSS -->
 		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
@@ -16,18 +25,27 @@
 		<meta charset = 'utf-8' />
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		
-		<title>Новостройки:Админ</title>
+		<title>Новобудови:Адмін</title>
 	</head>
 	<body>
 		<div class = 'container'>
-			<h2 class = 'display-4'>Добавить новостройку</h2>
+			<h2 class = 'display-4'>Додати новобудову</h2>
 			<p></p>
 			<form action = 'admin.php' method = 'POST'>
 				<input type = "hidden" name = "id" value = "add_new_complex" />
-				<h5>Название:</h5>  <input type = 'text' class = 'form-control' name = 'name' />
-				<h5>Город:</h5>  <input type = 'text' class = 'form-control' name = 'city' />
+				<h5>Назва:</h5>  <input type = 'text' class = 'form-control' name = 'name' />
+				<h5>Місто:</h5>  
+				<select name = 'city_name' class = 'form-control'>
+					<?php 
+						include 'db_manager.php';
+						$cities = QueryRunner::getAllCitiesAsArray();
+						foreach($cities as $city_name) {
+							echo "<option value = '".$city_name."'>".$city_name."</option>\n";
+						}
+					?>
+				</select>
 				<p></p>
-				<input type = 'submit' value = 'Добавить' class = 'btn btn-success' />
+				<input type = 'submit' value = 'Додати' class = 'btn btn-success' />
 				
 			</form>
 		</div>

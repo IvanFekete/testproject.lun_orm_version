@@ -2,7 +2,7 @@
 	include 'db_manager.php';
 ?>
 <!DOCTYPE html>
-<html lang = 'ru'>
+<html lang = 'uk'>
 	<head>
 		<!-- Latest compiled and minified CSS -->
 		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
@@ -19,17 +19,17 @@
 		<meta charset = 'utf-8' />
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		
-		<title>Новостройки:Клиент</title>
+		<title>Новобудови:Клієнт</title>
 	</head>
 	<body>
 		<div class = 'container'>
 			<div class = 'row'>
-				<h1 class = 'display-4'>Перейти на <a href = 'admin.php'>Админ</a> или на <a href = 'index.php'>главную</a>.</h1>
+				<h1 class = 'display-4'>Перейти на <a href = 'admin.php'>Адмін</a> або на <a href = 'index.php'>головну</a>.</h1>
 			</div>
 			<div class = 'row'>
 				<div class = 'col-sm-4'>				
 					<form action = 'client.php' method = 'GET'>
-						<h2>Город:</h2>
+						<h2>Місто:</h2>
 						
 						<div class = 'container'>
 							<?php
@@ -45,7 +45,23 @@
 							?>
 						</div>
 						
-						<h2>Количество комнат:</h2>
+						<h2>Локація:</h2>
+						
+						<div class = 'container'>
+							<?php
+								$localities = QueryRunner::getAllLocalitiesAsArray();
+								foreach($localities as $locality) {
+									$checked = "";
+									if(array_key_exists('locality', $_GET) && in_array($locality, $_GET['locality'])) {
+										$checked = "checked";
+									}
+									echo "<p><input type = 'checkbox' name = 'locality[]' value = '".
+										$locality."' ".$checked." />".$locality."</p>";
+								}
+							?>
+						</div>
+						
+						<h2>Кількість кімнат:</h2>
 						
 						<div class = 'container'>
 							<?php						
@@ -61,33 +77,35 @@
 							?>
 						</div>
 						
-						<input type = 'submit' class = 'btn btn-primary' value = 'Фильтр' />
+						<input type = 'submit' class = 'btn btn-primary' value = 'Фiльтр' />
 					</form>
 				</div>
 				
 				<div class = 'col-sm-8'>
 					<table class = "table table-striped">
 						<tr>
-							<td>Город</td>
+							<td>Місто</td>
 							<td>ЖК</td>
-							<td>Название дома</td>
-							<td>Количество комнат</td>
-							<td>Площадь</td>
-							<td>Цена</td>
+							<td>Назва будинку</td>
+							<td>Кількість кімнат</td>
+							<td>Площа</td>
+							<td>Ціна</td>
 						</tr>
 						<?php
-							$dql = "SELECT f, h, c, ft FROM Flat f JOIN f.house h JOIN h.complex c JOIN f.flatType ft";
+							$dql = "SELECT f, h, c, ft, ct, l FROM Flat f JOIN f.house h JOIN h.complex c JOIN f.flatType ft JOIN c.city ct JOIN c.localities l";
 							$city_statement = "";
 							$flat_type_statement = "";
+							$locality_statement = "";
 							
 							if(array_key_exists('city', $_GET)) {
 								foreach($_GET['city'] as $city_name) {
 									if($city_statement != '') {
 										$city_statement .= " OR ";
 									}
-									$city_statement .= "c.city = '".$city_name."'";
+									$city_statement .= "ct.name = '".$city_name."'";
 								}
 							}
+							
 							if(array_key_exists('flat_type', $_GET)) {								
 								foreach($_GET['flat_type'] as $flat_type) {
 									$query = QueryRunner::runDqlQuery("SELECT ft FROM FlatType ft WHERE ft.name = '$flat_type'");
@@ -99,21 +117,37 @@
 								}
 							}
 							
-							
-							if($city_statement != '' || $flat_type_statement != '') {
-								$dql .= " WHERE ";
-								if($city_statement != '') {
-									$dql .= "(".$city_statement.")";									
-									if($flat_type_statement != '') {
-										$dql .= " AND (".$flat_type_statement.")";
+							if(array_key_exists('locality', $_GET)) {								
+								foreach($_GET['locality'] as $locality_name) {
+									$query = QueryRunner::runDqlQuery("SELECT l FROM Locality l WHERE l.name = '$locality_name'");
+									$locality_id = $query[0]['id'];
+									if($locality_statement != '') {
+										$locality_statement .= " OR ";
 									}
+									$locality_statement .= "l.id = ".$locality_id;
 								}
-								else if($flat_type_statement != '') {
-									$dql .= "(".$flat_type_statement.")";
+							}
+							
+							$statements = [];
+							if($city_statement != '') {
+								$statements[] = $city_statement;
+							}
+							if($flat_type_statement != '') {
+								$statements[] = $flat_type_statement;
+							}
+							if($locality_statement != '') {
+								$statements[] = $locality_statement;
+							}
+							if(!empty($statements)) {
+								$dql .= " WHERE ";
+								$dql .= "(".$statements[0].")";
+								for($i = 1; $i < count($statements); $i++) {
+									$dql .= " AND (".$statements[$i].")";
 								}
 								
-								$dql .= " ORDER BY f.price";
 							}
+							
+							$dql .= " ORDER BY f.price";
 							
 							
 						
@@ -127,7 +161,7 @@
 							foreach($allFlats as $row) {
 								$complex_name = $row['house']['complex']['name'];
 								$house_name = $row['house']['name'];
-								$complex_city = $row['house']['complex']['city'];
+								$complex_city = $row['house']['complex']['city']['name'];
 								$flat_type = $row['flatType']['name'];
 								$square = $row['square'];
 								$price = $row['price'];
