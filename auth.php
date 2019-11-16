@@ -1,3 +1,23 @@
+<?php
+			include 'error_messages.php';
+			
+			if(array_key_exists('login', $_POST) && array_key_exists('password', $_POST)) {
+				if($_POST['login'] = 'admin' && $_POST['password'] == 'admin') {
+					session_start();
+					$_SESSION["loggedin"] = true;
+					
+					header('Location: admin.php');
+				}
+				else {
+					echo ErrorMessages::getAuthErrorMessage();
+				}
+			}
+			else {
+				session_start();
+				$_SESSION = array();
+				session_destroy();
+			}
+		?>
 <!DOCTYPE html>
 <html lang = 'uk'>
 	<head>
@@ -19,26 +39,7 @@
 		<title>Новобудови:Адмін</title>
 	</head>
 	<body>
-		<?php
-			include 'error_messages.php';
-			
-			if(array_key_exists('login', $_POST) && array_key_exists('password', $_POST)) {
-				if($_POST['login'] = 'admin' && $_POST['password'] == 'admin') {
-					session_start();
-					$_SESSION["loggedin"] = true;
-					
-					header('Location: admin.php');
-				}
-				else {
-					echo ErrorMessages::getAuthErrorMessage();
-				}
-			}
-			else {
-				session_start();
-				$_SESSION = array();
-				session_destroy();
-			}
-		?>
+		
 		<div class = 'container'>
 			<h2 class = 'display-4'>Авторизація</h2>
 			<p></p>
